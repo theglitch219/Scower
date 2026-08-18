@@ -14,9 +14,51 @@ function home(){root.innerHTML=nav()+`<main class="wrap"><section class="hero"><
 async function loadBounties(){try{const bs=await api("/bounties");document.getElementById("bounties").innerHTML=bs.slice(0,6).map(b=>`<article class="card"><div class="eyebrow">${esc(b.category)} · $${b.budget}</div><h3>${esc(b.title)}</h3><div class="muted">${b.submissions} submissions</div><br><button class="btn" onclick="view(${b.id})">View bounty →</button></article>`).join("")||"<p class='muted'>No bounties yet. Create the first one.</p>"}catch(e){document.getElementById("bounties").innerHTML="<p class='muted'>Database is not connected yet.</p>"}}
 function auth(){root.insertAdjacentHTML("beforeend",`<div class="modal" id="modal"><div class="modalbox"><div class="eyebrow">SCOWER ACCOUNT</div><h2 id="authTitle">Create account.</h2><p class="muted">Real accounts. Passwords are verified by the Scower server.</p><div class="field" id="nameField"><label>Name</label><input id="name" placeholder="Your name"></div><div class="field"><label>Email</label><input id="email" type="email" placeholder="you@example.com"></div><div class="field"><label>Password (8+ characters)</label><input id="password" type="password"></div><div class="field" id="roleField"><label>I'm here as</label><div class="role"><button id="rb" class="sel" onclick="mode='buyer';rb.className='sel';rr.className=''">Buyer<br><small>I need answers</small></button><button id="rr" onclick="mode='researcher';rr.className='sel';rb.className=''">Researcher<br><small>I sell knowledge</small></button></div></div><button class="btn primary" style="width:100%;margin-top:8px" onclick="signup()">Create account</button><button class="btn" style="width:100%;margin-top:8px" onclick="loginMode()">I already have an account</button><button class="btn" style="width:100%;margin-top:8px" onclick="document.getElementById('modal').remove()">Cancel</button></div></div>`)}
 function loginMode(){document.getElementById("authTitle").textContent="Sign in.";document.getElementById("nameField").style.display="none";document.getElementById("roleField").style.display="none";document.querySelector("#modal .primary").textContent="Sign in";document.querySelector("#modal .primary").onclick=login;document.querySelector("#modal .btn:nth-last-child(2)").style.display="none"}
-async function signup(){try{const d=await api("/auth/signup",{method:"POST",body:JSON.stringify({name:name.value,email:email.value,password:password.value,role:mode})});token=d.token;localStorage.setItem("scower_token",token);me=d.user;document.getElementById("modal").remove();toast("Account created.");home()}catch(e){toast(e.message)}}
-async function login(){try{const d=await api("/auth/login",{method:"POST",body:JSON.stringify({email:email.value,password:password.value})});token=d.token;localStorage.setItem("scower_token",token);me=d.user;document.getElementById("modal").remove();toast("Signed in.");home()}catch(e){toast(e.message)}}
-function logout(){localStorage.removeItem("scower_token");token=null;me=null;home()}
+async function signup(){
+  try{
+    const d=await api("/auth/signup",{
+      method:"POST",
+      body:JSON.stringify({
+        name:document.getElementById("name").value.trim(),
+        email:document.getElementById("email").value.trim(),
+        password:document.getElementById("password").value,
+        role:mode
+      })
+    });
+
+    token=d.token;
+    localStorage.setItem("scower_token",token);
+    me=d.user;
+
+    document.getElementById("modal").remove();
+    toast("Account created.");
+    home();
+  }catch(e){
+    toast(e.message);
+  }
+                         }
+  async function login(){
+  try{
+    const d=await api("/auth/login",{
+      method:"POST",
+      body:JSON.stringify({
+        email:document.getElementById("email").value.trim(),
+        password:document.getElementById("password").value
+      })
+    });
+
+    token=d.token;
+    localStorage.setItem("scower_token",token);
+    me=d.user;
+
+    document.getElementById("modal").remove();
+    toast("Signed in.");
+    home();
+  }catch(e){
+    toast(e.message);
+  }
+  }
+  function logout(){localStorage.removeItem("scower_token");token=null;me=null;home()}
 async function create(){if(!me||me.role!=="buyer")return auth();root.insertAdjacentHTML("beforeend",`<div class="modal" id="modal"><div class="modalbox"><div class="eyebrow">NEW BOUNTY</div><h2>Ask something worth paying for.</h2><div class="field"><label>Question</label><input id="bt" placeholder="What do you need to know?"></div><div class="field"><label>Description</label><textarea id="bd" rows="4" placeholder="Define the evidence and scope you need."></textarea></div><div class="field"><label>Category</label><select id="bc"><option>RESEARCH</option><option>VERIFICATION</option><option>LOCAL KNOWLEDGE</option><option>FIELD INTELLIGENCE</option><option>DATA COLLECTION</option></select></div><div class="field"><label>Reward (USD demo amount)</label><input id="bb" type="number" min="0.01" step=".01" value="5"></div><button class="btn primary" style="width:100%" onclick="postBounty()">Create bounty</button><button class="btn" style="width:100%;margin-top:8px" onclick="document.getElementById('modal').remove()">Cancel</button></div></div>`)}
 async function postBounty(){try{await api("/bounties",{method:"POST",body:JSON.stringify({title:bt.value,description:bd.value,category:bc.value,budget:bb.value})});document.getElementById("modal").remove();toast("Bounty created.");home()}catch(e){toast(e.message)}}
 async function explore(){location.hash="explore";const el=document.getElementById("bounties");if(el)el.scrollIntoView({behavior:"smooth"})}
