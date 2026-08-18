@@ -156,6 +156,6 @@ app.get("/api/my/bounties",auth,async(req,res)=>{
 });
 
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "Public", "index.html"));
 });;
 init().then(()=>app.listen(process.env.PORT||10000,()=>console.log("Scower running"))).catch(e=>{console.error(e);process.exit(1);});
