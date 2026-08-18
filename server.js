@@ -155,5 +155,7 @@ app.get("/api/my/bounties",auth,async(req,res)=>{
   const {rows}=await db(`SELECT b.*,(SELECT count(*) FROM submissions s WHERE s.bounty_id=b.id)::int submissions FROM bounties b WHERE b.buyer_id=$1 ORDER BY b.created_at DESC`,[req.user.id]);res.json(rows);
 });
 
-app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});;
 init().then(()=>app.listen(process.env.PORT||10000,()=>console.log("Scower running"))).catch(e=>{console.error(e);process.exit(1);});
