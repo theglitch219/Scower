@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scower — Human Intelligence Marketplace</title>
+<style>
+:root{--bg:#fff;--fg:#15131b;--muted:#716b7a;--card:#f7f5fa;--line:#e7e2ec;--purple:#7c3aed}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--fg)}
+body.dark{--bg:#0d0b12;--fg:#f7f3ff;--muted:#a69db1;--card:#17131d;--line:#302938}
+nav{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);z-index:5}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px}.mark{width:34px;height:34px;border-radius:10px;background:var(--purple);display:grid;place-items:center;color:white;font-weight:1000}
+nav a,button{font:inherit}nav a{color:var(--fg);text-decoration:none;margin-left:22px}.btn{border:0;border-radius:10px;padding:11px 16px;cursor:pointer}.primary{background:var(--purple);color:#fff}.ghost{background:var(--card);color:var(--fg)}
+main{max-width:1180px;margin:auto;padding:70px 6%}.hero{max-width:820px}.eyebrow{color:var(--purple);font-weight:800;letter-spacing:.08em}.hero h1{font-size:clamp(46px,8vw,82px);line-height:.98;margin:15px 0}.hero p{font-size:19px;color:var(--muted);line-height:1.7;max-width:680px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.stats,.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(3,1fr);margin:60px 0}.grid{grid-template-columns:repeat(3,1fr)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}.stat b{font-size:30px}.stat span{display:block;color:var(--muted);margin-top:4px}.section{margin:75px 0}.section h2{font-size:34px}.tag{display:inline-block;color:var(--purple);font-size:12px;font-weight:800;letter-spacing:.06em}.bounty h3{margin:10px 0}.money{font-weight:900}.muted{color:var(--muted)}.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.open{display:flex}.modalbox{background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:25px;width:min(520px,100%)}input,textarea,select{width:100%;padding:13px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;margin:7px 0 14px}label{font-size:13px;font-weight:700}.dash{display:none}.dash.show{display:block}.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.pill{padding:5px 9px;border-radius:99px;background:#ede9fe;color:#5b21b6;font-size:12px;font-weight:800}@media(max-width:750px){.grid,.stats{grid-template-columns:1fr}.hero h1{font-size:52px}nav{padding:0 4%}nav .links{display:none}main{padding:45px 5%}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><div class="mark">S</div>scower</div>
+  <div class="links"><a href="#explore">Explore</a><a href="#how">How it works</a><button class="btn ghost" onclick="toggleTheme()">◐</button><button class="btn primary" onclick="openAuth('login')">Sign in</button></div>
+</nav>
+
+<main id="home">
+<section class="hero">
+<div class="eyebrow">HUMAN INTELLIGENCE MARKETPLACE</div>
+<h1>Questions worth asking.<br>Answers worth paying for.</h1>
+<p>Post a question. Let people with real-world knowledge investigate it. Pay only for useful, evidence-backed answers.</p>
+<div class="actions"><button class="btn primary" onclick="openAuth('signup')">Create account ↗</button><button class="btn ghost" onclick="document.querySelector('#explore').scrollIntoView()">Explore open questions</button></div>
+</section>
+
+<div class="stats">
+<div class="card stat"><b>$2,840</b><span>paid to researchers</span></div>
+<div class="card stat"><b>418</b><span>questions answered</span></div>
+<div class="card stat"><b>96%</b><span>answers accepted</span></div>
+</div>
+
+<section class="section" id="explore"><div class="eyebrow">OPEN QUESTIONS</div><h2>Things people need to know.</h2><div id="bounties" class="grid"></div></section>
+
+<section class="section" id="how"><div class="eyebrow">THE LOOP</div><h2>Knowledge becomes a market.</h2><div class="grid">
+<div class="card"><b>01 · Ask</b><p class="muted">Turn a question nobody has time to answer into a paid research task.</p></div>
+<div class="card"><b>02 · Investigate</b><p class="muted">Researchers submit evidence, context and first-hand knowledge.</p></div>
+<div class="card"><b>03 · Verify</b><p class="muted">Submissions are reviewed for evidence, accuracy and usefulness.</p></div>
+<div class="card"><b>04 · Pay</b><p class="muted">Accepted contributors receive their payout through the settlement layer.</p></div>
+</div></section>
+
+<section id="dashboard" class="dash section">
+<div class="row"><div><div class="eyebrow" id="dashRole"></div><h2 id="dashTitle"></h2></div><button class="btn ghost" onclick="logout()">Sign out</button></div>
+<div id="dashContent"></div>
+</section>
+</main>
+
+<div id="modal" class="modal"><div class="modalbox">
+<div class="row"><h2 id="modalTitle">Create account</h2><button class="btn ghost" onclick="closeModal()">×</button></div>
+<form id="authForm">
+<div id="nameWrap"><label>Name</label><input id="name" required></div>
+<label>Email</label><input id="email" type="email" required>
+<label>Password</label><input id="password" type="password" minlength="8" required>
+<div id="roleWrap"><label>Account type</label><select id="role"><option value="buyer">Buyer — post & pay</option><option value="researcher">Researcher — investigate & earn</option></select></div>
+<button class="btn primary" style="width:100%" id="authSubmit">Create account</button>
+<p id="authSwitch" class="muted" style="text-align:center;cursor:pointer"></p>
+<p id="authError" style="color:#dc2626"></p>
+</form></div></div>
+
+<script>
+let token=localStorage.getItem("scower_token"), user=JSON.parse(localStorage.getItem("scower_user")||"null"), mode="signup";
+const api=async(url,opt={})=>{opt.headers={...(opt.headers||{}),...(token?{Authorization:"Bearer "+token}:{}),...(opt.body?{"Content-Type":"application/json"}:{})};const r=await fetch(url,opt);const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||"Request failed");return d};
+function toggleTheme(){document.body.classList.toggle("dark");localStorage.setItem("scower_theme",document.body.classList.contains("dark")?"dark":"light")}
+if(localStorage.getItem("scower_theme")==="dark")document.body.classList.add("dark");
+function openAuth(m){mode=m;document.getElementById("modal").classList.add("open");document.getElementById("nameWrap").style.display=m==="signup"?"block":"none";document.getElementById("roleWrap").style.display=m==="signup"?"block":"none";document.getElementById("modalTitle").textContent=m==="signup"?"Create your Scower account":"Sign in";document.getElementById("authSubmit").textContent=m==="signup"?"Create account":"Sign in";document.getElementById("authSwitch").textContent=m==="signup"?"Already have an account? Sign in":"Need an account? Create one"}
+function closeModal(){document.getElementById("modal").classList.remove("open")}
+document.getElementById("authSwitch").onclick=()=>openAuth(mode==="signup"?"login":"signup");
+document.getElementById("authForm").onsubmit=async e=>{e.preventDefault();document.getElementById("authError").textContent="";try{const d=await api("/api/auth/"+mode,{method:"POST",body:JSON.stringify({name:document.getElementById("name").value,email:document.getElementById("email").value,password:document.getElementById("password").value,role:document.getElementById("role").value})});token=d.token;user=d.user;localStorage.setItem("scower_token",token);localStorage.setItem("scower_user",JSON.stringify(user));closeModal();renderDash()}catch(err){document.getElementById("authError").textContent=err.message}};
+async function loadBounties(){try{const bs=await api("/api/bounties");document.getElementById("bounties").innerHTML=bs.length?bs.map(b=>`<article class="card bounty"><span class="tag">${b.category}</span><h3>${escapeHtml(b.title)}</h3><p class="muted">${escapeHtml(b.description)}</p><div class="row"><span>${b.submission_count} submissions</span><span class="money">$${(b.amount_cents/100).toFixed(2)}</span></div></article>`).join(""):`<div class="card">No bounties yet. Create the first one.</div>`}catch(e){document.getElementById("bounties").innerHTML="<div class='card'>Unable to load bounties.</div>"}}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function renderDash(){if(!user)return;const d=document.getElementById("dashboard");d.classList.add("show");document.getElementById("dashRole").textContent=user.role.toUpperCase();document.getElementById("dashTitle").textContent=`Welcome, ${user.name}`;if(user.role==="buyer")renderBuyer();else renderResearcher();d.scrollIntoView({behavior:"smooth"})}
+function renderBuyer(){document.getElementById("dashContent").innerHTML=`<div class="grid"><div class="card"><h3>Create bounty</h3><form onsubmit="createBounty(event)"><label>Question</label><input id="bt" required><label>Details</label><textarea id="bd" required></textarea><label>Category</label><select id="bc"><option>RESEARCH</option><option>VERIFICATION</option><option>LOCAL KNOWLEDGE</option><option>FIELD INTELLIGENCE</option></select><label>Bounty in USD</label><input id="ba" type="number" min=".01" step=".01" required><button class="btn primary">Publish bounty</button></form></div><div class="card"><h3>Wallet</h3><p class="muted">Connect an Algorand wallet before paying accepted researchers.</p><button class="btn primary" onclick="connectWallet()">Connect wallet</button><p id="wallet"></p></div></div><div class="card" style="margin-top:16px"><h3>Your bounties</h3><div id="mine">Loading…</div></div>`;loadMine()}
+async function createBounty(e){e.preventDefault();try{await api("/api/bounties",{method:"POST",body:JSON.stringify({title:bt.value,description:bd.value,category:bc.value,amountCents:Math.round(Number(ba.value)*100)})});e.target.reset();loadMine();loadBounties()}catch(x){alert(x.message)}}
+async function loadMine(){try{const bs=await api("/api/bounties/mine");document.getElementById("mine").innerHTML=bs.length?bs.map(b=>`<div class="row" style="padding:12px 0;border-bottom:1px solid var(--line)"><span>${escapeHtml(b.title)}</span><span class="pill">$${(b.amount_cents/100).toFixed(2)} · ${b.status}</span></div>`).join(""):"No bounties yet."}catch(e){document.getElementById("mine").textContent=e.message}}
+async function connectWallet(){const address=prompt("For this build, enter your Algorand wallet address to associate it with your account.");if(!address)return;try{const w=await api("/api/wallet/connect",{method:"POST",body:JSON.stringify({address})});document.getElementById("wallet").textContent="Connected: "+w.address}catch(e){alert(e.message)}}
+async function renderResearcher(){document.getElementById("dashContent").innerHTML=`<div class="grid"><div class="card"><h3>Browse questions</h3><div id="researchBounties">Loading…</div></div><div class="card"><h3>Your earnings & reputation</h3><p>Reputation: <b>${user.reputation||0}</b></p><div id="subs">Loading…</div></div></div>`;try{const [bs,ss]=await Promise.all([api("/api/bounties"),api("/api/submissions/mine")]);document.getElementById("researchBounties").innerHTML=bs.map(b=>`<div style="padding:12px 0;border-bottom:1px solid var(--line)"><b>${escapeHtml(b.title)}</b><p class="muted">${escapeHtml(b.description)}</p><button class="btn primary" onclick="submitResearch(${b.id})">Submit research</button></div>`).join("")||"No open questions.";document.getElementById("subs").innerHTML=ss.length?ss.map(s=>`<p>${escapeHtml(s.title)} — <span class="pill">${s.status}</span></p>`).join(""):"No submissions yet."}catch(e){document.getElementById("researchBounties").textContent=e.message}}
+async function submitResearch(id){const answer=prompt("Your research / answer:");if(!answer)return;const evidence=prompt("Evidence / sources (optional):")||"";try{await api("/api/submissions",{method:"POST",body:JSON.stringify({bountyId:id,answer,evidence})});renderResearcher()}catch(e){alert(e.message)}}
+function logout(){token=null;user=null;localStorage.removeItem("scower_token");localStorage.removeItem("scower_user");document.getElementById("dashboard").classList.remove("show")}
+loadBounties();if(user)renderDash();
+</script>
+</body>
+</html>
