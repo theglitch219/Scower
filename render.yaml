@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: scower
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: scower-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+databases:
+  - name: scower-db
+    plan: free
